@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0d12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>IS YOU</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; height: 100%; overflow: hidden;
+    background: #0b0d12; color: #e8e6e1;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none;
+    -webkit-tap-highlight-color: transparent; overscroll-behavior: none;
+  }
+  #app {
+    height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  }
+  header { display: flex; gap: 16px; align-items: baseline; }
+  h1 { margin: 0; font-size: 18px; letter-spacing: .2em; }
+  #levelName { color: #9aa0ab; }
+  canvas { background: #14171f; border-radius: 6px; box-shadow: 0 12px 40px #0009; touch-action: none; }
+  #status { min-height: 1.4em; color: #f2d14a; }
+  #rules { display: flex; flex-wrap: wrap; gap: 4px 16px; justify-content: center; max-width: 900px; font-size: 13px; color: #9aa0ab; min-height: 1.2em; }
+  footer { font-size: 12px; color: #6b717c; }
+  kbd { border: 1px solid #3a3f4b; border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; color: #c8c6c1; }
+  .overlay {
+    position: fixed; inset: 0; background: #0b0d12ee;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+  }
+  .overlay h2 { margin: 0; font-size: 34px; letter-spacing: .25em; }
+  .overlay p { margin: 0; color: #9aa0ab; }
+  .hidden { display: none !important; }
+  #levelGrid { display: grid; grid-template-columns: repeat(auto-fill, 165px); justify-content: center; gap: 10px; width: min(1120px, 100%); }
+  #levelGrid button {
+    font: inherit; font-size: 13px; text-align: left; padding: 12px; cursor: pointer;
+    background: #14171f; color: #e8e6e1; border: 1px solid #2a2e38; border-radius: 6px;
+  }
+  #levelGrid button:hover, #levelGrid button:focus { border-color: #e0479e; outline: none; }
+  #levelGrid button.done { color: #8fe07a; }
+  #levelGrid .num { display: block; color: #6b717c; font-size: 11px; margin-bottom: 4px; }
+  #levelGrid .section { grid-column: 1 / -1; margin-top: 14px; color: #9aa0ab; font-size: 13px; letter-spacing: .15em; text-transform: uppercase; border-bottom: 1px solid #2a2e38; padding-bottom: 6px; }
+  #menu { background: #0b0d12; justify-content: flex-start; overflow-y: auto; padding: 48px 24px; }
+  #resetProgress { font: inherit; font-size: 12px; background: none; color: #6b717c; border: 1px solid #2a2e38; border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+  #resetProgress:hover { color: #d64550; border-color: #d64550; }
+  .btn {
+    font: inherit; font-size: 14px; color: #e8e6e1; background: #14171f; border: 1px solid #2a2e38;
+    border-radius: 10px; padding: 10px 16px; cursor: pointer; touch-action: manipulation;
+  }
+  .btn:active { background: #262b38; }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  #touch { display: none; width: 100%; max-width: 520px; justify-content: space-between; align-items: center; padding: 0 14px; }
+  #touch .pad { display: grid; grid-template-columns: repeat(3, 58px); grid-template-rows: repeat(3, 50px); gap: 6px; }
+  #touch .pad .btn { padding: 0; font-size: 20px; }
+  #touch .up { grid-area: 1 / 2; }
+  #touch .left { grid-area: 2 / 1; }
+  #touch .right { grid-area: 2 / 3; }
+  #touch .down { grid-area: 3 / 2; }
+  #touch .side { display: grid; grid-template-columns: repeat(2, 82px); grid-auto-rows: 50px; gap: 8px; }
+  #touch .side .btn { padding: 0; font-size: 13px; }
+  @media (pointer: coarse) {
+    #touch { display: flex; }
+    footer, .kbd-hint { display: none; }
+    #app { gap: 8px; }
+  }
+  @media (max-width: 600px) {
+    .overlay h2 { font-size: 22px; }
+    #menu { padding: 32px 12px; }
+    #levelGrid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <header><h1>IS YOU</h1><span id="levelName"></span></header>
+  <canvas id="board"></canvas>
+  <div id="status"></div>
+  <div id="rules"></div>
+  <div id="touch">
+    <div class="pad">
+      <button class="btn up" data-act="up" data-repeat aria-label="Up">▲</button>
+      <button class="btn left" data-act="left" data-repeat aria-label="Left">◀</button>
+      <button class="btn right" data-act="right" data-repeat aria-label="Right">▶</button>
+      <button class="btn down" data-act="down" data-repeat aria-label="Down">▼</button>
+    </div>
+    <div class="side">
+      <button class="btn" data-act="undo" data-repeat>Undo</button>
+      <button class="btn" data-act="wait" data-repeat>Wait</button>
+      <button class="btn" data-act="restart">Restart</button>
+      <button class="btn" data-act="menu">Levels</button>
+    </div>
+  </div>
+  <footer>
+    <kbd>←↑↓→</kbd>/<kbd>WASD</kbd> move &nbsp; <kbd>Space</kbd> wait &nbsp;
+    <kbd>Z</kbd> undo &nbsp; <kbd>R</kbd> restart &nbsp; <kbd>Esc</kbd> levels
+  </footer>
+</div>
+
+<div id="menu" class="overlay">
+  <h2>IS YOU</h2>
+  <p>Push the words. Change the rules. <span id="progress"></span></p>
+  <button class="btn hidden" id="backBtn" data-act="menu">← Back to level</button>
+  <div id="levelGrid"></div>
+  <button id="resetProgress">Reset progress</button>
+</div>
+
+<div id="winScreen" class="overlay hidden">
+  <h2 id="winTitle">CONGRATULATIONS</h2>
+  <p id="winHint" class="kbd-hint"></p>
+  <div class="actions">
+    <button class="btn" data-act="undo">Undo</button>
+    <button class="btn" data-act="menu">Levels</button>
+    <button class="btn" data-act="next" id="nextBtn">Next level</button>
+  </div>
+</div>
+
+<script src="engine.js"></script>
+<script src="levels.js"></script>
+<script>
+'use strict';
+const { createState, step, snapshot, restore, hasProp, hasYou, PROPS } = Engine;
+
+const SAVE_KEY = 'isyou.completed';
+const CURRENT_KEY = 'isyou.current'; // per-tab, so reloading the page restarts the level you were on
+const completed = new Set(JSON.parse(localStorage.getItem(SAVE_KEY) || '[]'));
+
+const canvas = document.getElementById('board');
+const ctx = canvas.getContext('2d');
+const $ = (id) => document.getElementById(id);
+
+let screen = 'menu';            // 'menu' | 'play' | 'win'
+let levelIndex = -1;
+let state = null;
+let initialSnap = null;
+let history = [];
+let cell = 48;
+let dpr = 1;
+let lastActionAt = 0;
+let lastFrame = 0;
+const renderPos = new Map();
+
+// ---------- colors ----------
+const COLORS = {
+  baba: '#f4f0e8', wall: '#3d4250', rock: '#b0864f', flag: '#f2d14a', water: '#3c7ddc',
+  lava: '#e8622c', skull: '#c4343e', key: '#f2d14a', door: '#c0392b', grass: '#3f9a4a',
+};
+const WORD_COLORS = {
+  baba: '#e0479e', wall: '#8a90a0', rock: '#b0864f', flag: '#f2d14a', water: '#4f8fe8',
+  lava: '#e8622c', skull: '#d64550', key: '#f2d14a', door: '#d6513f', grass: '#4fb35c', text: '#d36ad9',
+  is: '#ffffff', and: '#ffffff',
+  you: '#e0479e', win: '#f2d14a', stop: '#4fb35c', push: '#b0864f', sink: '#4f8fe8', defeat: '#d64550',
+  hot: '#e8622c', melt: '#6fd0f5', open: '#f2d14a', shut: '#d6513f', move: '#8fe07a',
+};
+const FLOOR = new Set(['water', 'lava', 'grass']);
+
+// ---------- drawing helpers ----------
+function rr(c, x, y, w, h, r) {
+  c.beginPath();
+  c.moveTo(x + r, y);
+  c.arcTo(x + w, y, x + w, y + h, r);
+  c.arcTo(x + w, y + h, x, y + h, r);
+  c.arcTo(x, y + h, x, y, r);
+  c.arcTo(x, y, x + w, y, r);
+  c.closePath();
+}
+function circ(c, x, y, r) { c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.fill(); }
+function poly(c, x, y, s, pts) {
+  c.beginPath();
+  pts.forEach(([px, py], i) => (i ? c.lineTo : c.moveTo).call(c, x + px * s, y + py * s));
+  c.closePath();
+}
+
+const DRAW = {
+  baba(c, x, y, s, o, t) {
+    const b = Math.sin(t / 220 + o.id) * s * 0.025;
+    c.fillStyle = COLORS.baba;
+    circ(c, x + s * 0.3, y + s * 0.3 + b, s * 0.08);
+    circ(c, x + s * 0.7, y + s * 0.3 + b, s * 0.08);
+    rr(c, x + s * 0.16, y + s * 0.3 + b, s * 0.68, s * 0.44, s * 0.2); c.fill();
+    c.fillRect(x + s * 0.26, y + s * 0.68 + b, s * 0.1, s * 0.15);
+    c.fillRect(x + s * 0.64, y + s * 0.68 + b, s * 0.1, s * 0.15);
+    const ex = ({ left: -0.12, right: 0.12 }[o.dir] || 0) * s;
+    const ey = ({ up: -0.07, down: 0.05 }[o.dir] || 0) * s;
+    c.fillStyle = '#14171f';
+    circ(c, x + s * 0.4 + ex, y + s * 0.5 + b + ey, s * 0.05);
+    circ(c, x + s * 0.6 + ex, y + s * 0.5 + b + ey, s * 0.05);
+  },
+  wall(c, x, y, s) {
+    c.fillStyle = COLORS.wall;
+    c.fillRect(x + 1, y + 1, s - 2, s - 2);
+    c.strokeStyle = '#2a2e38';
+    c.lineWidth = Math.max(1, s * 0.05);
+    c.beginPath();
+    c.moveTo(x + 1, y + s / 2); c.lineTo(x + s - 1, y + s / 2);
+    c.moveTo(x + s / 2, y + 1); c.lineTo(x + s / 2, y + s / 2);
+    c.moveTo(x + s / 4, y + s / 2); c.lineTo(x + s / 4, y + s - 1);
+    c.moveTo(x + s * 0.75, y + s / 2); c.lineTo(x + s * 0.75, y + s - 1);
+    c.stroke();
+  },
+  rock(c, x, y, s) {
+    c.fillStyle = COLORS.rock;
+    poly(c, x, y, s, [[0.18, 0.72], [0.24, 0.38], [0.45, 0.2], [0.72, 0.27], [0.85, 0.55], [0.76, 0.8], [0.4, 0.85]]);
+    c.fill();
+    c.strokeStyle = '#7d5c34';
+    c.lineWidth = Math.max(1, s * 0.05);
+    c.beginPath(); c.moveTo(x + s * 0.45, y + s * 0.38); c.lineTo(x + s * 0.55, y + s * 0.55); c.lineTo(x + s * 0.68, y + s * 0.6); c.stroke();
+  },
+  flag(c, x, y, s, o, t) {
+    c.strokeStyle = '#d8d4cc';
+    c.lineWidth = Math.max(1.5, s * 0.06);
+    c.beginPath(); c.moveTo(x + s * 0.3, y + s * 0.14); c.lineTo(x + s * 0.3, y + s * 0.88); c.stroke();
+    const w = Math.sin(t / 250 + o.id) * s * 0.04;
+    c.fillStyle = COLORS.flag;
+    poly(c, x, y, s, [[0.33, 0.16], [0.84, 0.32 + w / s], [0.33, 0.5]]);
+    c.fill();
+  },
+  water(c, x, y, s, o, t) { liquid(c, x, y, s, t, COLORS.water, '#8fbaf5'); },
+  lava(c, x, y, s, o, t) { liquid(c, x, y, s, t, COLORS.lava, '#ffc06a'); },
+  skull(c, x, y, s) {
+    c.fillStyle = COLORS.skull;
+    circ(c, x + s * 0.5, y + s * 0.44, s * 0.28);
+    c.fillRect(x + s * 0.34, y + s * 0.55, s * 0.32, s * 0.26);
+    c.fillStyle = '#14171f';
+    circ(c, x + s * 0.39, y + s * 0.45, s * 0.07);
+    circ(c, x + s * 0.61, y + s * 0.45, s * 0.07);
+    c.fillRect(x + s * 0.44, y + s * 0.7, s * 0.04, s * 0.11);
+    c.fillRect(x + s * 0.53, y + s * 0.7, s * 0.04, s * 0.11);
+  },
+  key(c, x, y, s) {
+    c.strokeStyle = COLORS.key;
+    c.lineWidth = Math.max(2, s * 0.09);
+    c.beginPath(); c.arc(x + s * 0.3, y + s * 0.5, s * 0.13, 0, Math.PI * 2); c.stroke();
+    c.beginPath();
+    c.moveTo(x + s * 0.43, y + s * 0.5); c.lineTo(x + s * 0.85, y + s * 0.5);
+    c.moveTo(x + s * 0.72, y + s * 0.5); c.lineTo(x + s * 0.72, y + s * 0.66);
+    c.moveTo(x + s * 0.82, y + s * 0.5); c.lineTo(x + s * 0.82, y + s * 0.62);
+    c.stroke();
+  },
+  door(c, x, y, s) {
+    c.fillStyle = COLORS.door;
+    rr(c, x + s * 0.12, y + s * 0.06, s * 0.76, s * 0.88, s * 0.08); c.fill();
+    c.fillStyle = '#8e2a20';
+    c.fillRect(x + s * 0.22, y + s * 0.16, s * 0.56, s * 0.3);
+    c.fillRect(x + s * 0.22, y + s * 0.52, s * 0.56, s * 0.32);
+    c.fillStyle = '#f2d14a';
+    circ(c, x + s * 0.7, y + s * 0.5, s * 0.05);
+  },
+  grass(c, x, y, s) {
+    c.strokeStyle = COLORS.grass;
+    c.lineWidth = Math.max(1, s * 0.05);
+    c.beginPath();
+    for (const [gx, gy] of [[0.25, 0.4], [0.65, 0.3], [0.45, 0.75], [0.8, 0.7]]) {
+      c.moveTo(x + s * (gx - 0.08), y + s * (gy - 0.1)); c.lineTo(x + s * gx, y + s * (gy + 0.06));
+      c.lineTo(x + s * (gx + 0.08), y + s * (gy - 0.1));
+    }
+    c.stroke();
+  },
+};
+
+function liquid(c, x, y, s, t, base, crest) {
+  c.fillStyle = base;
+  c.fillRect(x, y, s, s);
+  c.strokeStyle = crest;
+  c.lineWidth = Math.max(1, s * 0.05);
+  c.beginPath();
+  for (const row of [0.33, 0.68]) {
+    for (let i = 0; i <= 8; i++) {
+      const px = x + (s * i) / 8;
+      const py = y + s * row + Math.sin(t / 300 + i * 0.9 + row * 7 + x * 0.05) * s * 0.04;
+      i ? c.lineTo(px, py) : c.moveTo(px, py);
+    }
+  }
+  c.stroke();
+}
+
+function drawText(c, x, y, s, o, active) {
+  const word = o.word.toUpperCase();
+  const col = WORD_COLORS[o.word] || '#fff';
+  c.globalAlpha = active ? 1 : 0.4;
+  if (PROPS.includes(o.word)) {
+    c.fillStyle = col;
+    rr(c, x + s * 0.07, y + s * 0.07, s * 0.86, s * 0.86, s * 0.12); c.fill();
+    c.fillStyle = '#14171f';
+  } else {
+    c.fillStyle = '#1c2029';
+    rr(c, x + s * 0.07, y + s * 0.07, s * 0.86, s * 0.86, s * 0.12); c.fill();
+    c.fillStyle = col;
+  }
+  let size = s * 0.34;
+  c.font = `bold ${size}px ui-monospace, Menlo, monospace`;
+  const w = c.measureText(word).width;
+  if (w > s * 0.78) {
+    size *= (s * 0.78) / w;
+    c.font = `bold ${size}px ui-monospace, Menlo, monospace`;
+  }
+  c.textAlign = 'center';
+  c.textBaseline = 'middle';
+  c.fillText(word, x + s / 2, y + s / 2 + 1);
+  c.globalAlpha = 1;
+}
+
+// ---------- rendering ----------
+function resize() {
+  if (!state) return;
+  dpr = window.devicePixelRatio || 1;
+  // Fit the board into the space left by the header, rule list and (on touch screens) the controls.
+  const app = $('app');
+  const style = getComputedStyle(app);
+  const shown = [...app.children].filter((el) => el !== canvas && el.offsetParent !== null);
+  let used = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom) + 16;
+  for (const el of shown) used += el.offsetHeight + parseFloat(style.rowGap || 0);
+  const maxW = window.innerWidth - (window.innerWidth < 600 ? 12 : 40);
+  const maxH = window.innerHeight - used;
+  cell = Math.max(12, Math.floor(Math.min(maxW / state.width, maxH / state.height, 72)));
+  canvas.width = state.width * cell * dpr;
+  canvas.height = state.height * cell * dpr;
+  canvas.style.width = state.width * cell + 'px';
+  canvas.style.height = state.height * cell + 'px';
+}
+
+function layer(o) {
+  if (hasProp(state, o, 'you')) return 3;
+  if (o.kind === 'text') return 2;
+  return FLOOR.has(o.kind) ? 0 : 1;
+}
+
+function render(t) {
+  requestAnimationFrame(render);
+  if (!state) return;
+  const dt = Math.min(100, t - (lastFrame || t));
+  lastFrame = t;
+  const k = 1 - Math.exp(-dt / 35);
+
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, state.width * cell, state.height * cell);
+  ctx.strokeStyle = '#191c25';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  for (let x = 1; x < state.width; x++) { ctx.moveTo(x * cell + 0.5, 0); ctx.lineTo(x * cell + 0.5, state.height * cell); }
+  for (let y = 1; y < state.height; y++) { ctx.moveTo(0, y * cell + 0.5); ctx.lineTo(state.width * cell, y * cell + 0.5); }
+  ctx.stroke();
+
+  const alive = new Set();
+  for (const o of [...state.objs].sort((a, b) => layer(a) - layer(b))) {
+    alive.add(o.id);
+    let p = renderPos.get(o.id);
+    if (!p) { p = { x: o.x, y: o.y }; renderPos.set(o.id, p); }
+    p.x += (o.x - p.x) * k;
+    p.y += (o.y - p.y) * k;
+    if (Math.abs(o.x - p.x) < 0.01) p.x = o.x;
+    if (Math.abs(o.y - p.y) < 0.01) p.y = o.y;
+    const px = p.x * cell;
+    const py = p.y * cell;
+    if (o.kind === 'text') drawText(ctx, px, py, cell, o, state.activeText.has(o.id));
+    else DRAW[o.kind](ctx, px, py, cell, o, t);
+  }
+  for (const id of renderPos.keys()) if (!alive.has(id)) renderPos.delete(id);
+}
+
+// ---------- game flow ----------
+function startLevel(i) {
+  levelIndex = i;
+  state = createState(LEVELS[i]);
+  initialSnap = snapshot(state);
+  history = [];
+  renderPos.clear();
+  $('levelName').textContent = `${i + 1}. ${LEVELS[i].name}`;
+  setScreen('play');
+  afterAction();
+  resize();
+}
+
+function setScreen(s) {
+  screen = s;
+  $('menu').classList.toggle('hidden', s !== 'menu');
+  $('winScreen').classList.toggle('hidden', s !== 'win');
+  if (s === 'menu') {
+    sessionStorage.removeItem(CURRENT_KEY);
+    buildMenu();
+  } else {
+    sessionStorage.setItem(CURRENT_KEY, LEVELS[levelIndex].name);
+  }
+}
+
+function buildMenu() {
+  $('backBtn').classList.toggle('hidden', !state);
+  const grid = $('levelGrid');
+  grid.innerHTML = '';
+  $('progress').textContent = `· ${LEVELS.filter((l) => completed.has(l.name)).length} / ${LEVELS.length} solved`;
+  const buttons = LEVELS.map((lvl, i) => {
+    if (lvl.section) {
+      const h = document.createElement('div');
+      h.className = 'section';
+      h.textContent = lvl.section;
+      grid.append(h);
+    }
+    const b = document.createElement('button');
+    const done = completed.has(lvl.name);
+    b.className = done ? 'done' : '';
+    b.innerHTML = `<span class="num">LEVEL ${i + 1}${done ? ' ✓' : ''}</span>`;
+    b.append(lvl.name);
+    b.onclick = () => startLevel(i);
+    grid.append(b);
+    return b;
+  });
+  const firstOpen = LEVELS.findIndex((l) => !completed.has(l.name));
+  const focus = buttons[levelIndex >= 0 ? levelIndex : Math.max(0, firstOpen)];
+  if (focus) focus.focus();
+}
+
+$('resetProgress').onclick = () => {
+  if (!confirm('Mark every level as unsolved?')) return;
+  completed.clear();
+  localStorage.removeItem(SAVE_KEY);
+  buildMenu();
+};
+
+function afterAction() {
+  $('rules').innerHTML = state.rules
+    .map((r) => `<span>${r.subject.toUpperCase()} IS <b style="color:${WORD_COLORS[r.complement]}">${r.complement.toUpperCase()}</b></span>`)
+    .join('');
+  $('status').textContent = !hasYou(state) && !state.won ? 'Nothing is YOU. Undo (Z) or restart (R).' : '';
+  if (state.won) {
+    completed.add(LEVELS[levelIndex].name);
+    localStorage.setItem(SAVE_KEY, JSON.stringify([...completed]));
+    const last = levelIndex === LEVELS.length - 1;
+    $('nextBtn').textContent = last ? 'Level select' : 'Next level';
+    const all = LEVELS.every((l) => completed.has(l.name));
+    $('winTitle').textContent = last && all ? 'YOU BEAT EVERY LEVEL' : 'CONGRATULATIONS';
+    $('winHint').innerHTML = last
+      ? '<kbd>Enter</kbd> level select &nbsp; <kbd>Z</kbd> undo'
+      : '<kbd>Enter</kbd> next level &nbsp; <kbd>Z</kbd> undo &nbsp; <kbd>Esc</kbd> level select';
+    setTimeout(() => { if (state.won && screen === 'play') setScreen('win'); }, 350);
+  }
+}
+
+function act(dir) {
+  const snap = snapshot(state);
+  if (step(state, dir)) {
+    history.push(snap);
+    afterAction();
+  }
+}
+
+function undo() {
+  if (!history.length) return;
+  restore(state, history.pop());
+  setScreen('play');
+  afterAction();
+}
+
+function restart() {
+  history.push(snapshot(state));
+  restore(state, initialSnap);
+  afterAction();
+}
+
+const KEY_DIRS = {
+  ArrowUp: 'up', KeyW: 'up', ArrowDown: 'down', KeyS: 'down',
+  ArrowLeft: 'left', KeyA: 'left', ArrowRight: 'right', KeyD: 'right',
+};
+
+// Letter shortcuts follow the character typed (z or Z, any keyboard layout). While an input method
+// is composing, the browser reports key "Process", so fall back to the physical key.
+function letterOf(e) {
+  if (e.key && e.key.length === 1 && !e.isComposing && e.keyCode !== 229) return e.key.toLowerCase();
+  return /^Key[A-Z]$/.test(e.code) ? e.code.slice(3).toLowerCase() : '';
+}
+
+// One entry point for keyboard, on-screen buttons and swipes.
+// Actions: up/down/left/right, wait, undo, restart, menu, next.
+function handle(action) {
+  if (screen === 'menu') {
+    if (action === 'menu' && state) setScreen('play');
+    return;
+  }
+  if (screen === 'win') {
+    if (action === 'next' || action === 'wait') {
+      if (levelIndex < LEVELS.length - 1) startLevel(levelIndex + 1);
+      else setScreen('menu');
+    } else if (action === 'menu') setScreen('menu');
+    else if (action === 'undo') undo();
+    return;
+  }
+  if (Engine.DIRS[action]) { if (!state.won) act(action); }
+  else if (action === 'wait') { if (!state.won) act(null); }
+  else if (action === 'undo') undo();
+  else if (action === 'restart') restart();
+  else if (action === 'menu') setScreen('menu');
+}
+
+function keyAction(e) {
+  const letter = letterOf(e);
+  if (KEY_DIRS[e.code]) return KEY_DIRS[e.code];
+  if (e.code === 'Space' || e.code === 'Period') return 'wait';
+  if (e.code === 'Enter') return 'next';
+  if (letter === 'z' || letter === 'u' || e.code === 'Backspace') return 'undo';
+  if (letter === 'r') return 'restart';
+  if (e.code === 'Escape') return 'menu';
+  return null;
+}
+
+window.addEventListener('keydown', (e) => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const action = keyAction(e);
+  // In the level select, only Esc is ours; Enter/Space must still activate the focused level button.
+  if (!action || (screen === 'menu' && action !== 'menu')) return;
+  e.preventDefault();
+  const now = performance.now();
+  if (screen === 'play' && e.repeat && now - lastActionAt < 90) return;
+  lastActionAt = now;
+  handle(action);
+});
+
+// On-screen buttons. Buttons marked data-repeat keep firing while held.
+document.querySelectorAll('[data-act]').forEach((btn) => {
+  let timer = null;
+  const stop = () => { clearTimeout(timer); clearInterval(timer); timer = null; };
+  btn.addEventListener('pointerdown', (e) => {
+    e.preventDefault(); // keep focus off the button so Space/Enter don't re-click it
+    if (!btn.hasAttribute('data-repeat')) return;
+    handle(btn.dataset.act);
+    stop();
+    timer = setTimeout(() => { timer = setInterval(() => handle(btn.dataset.act), 110); }, 280);
+  });
+  btn.addEventListener('click', () => { if (!btn.hasAttribute('data-repeat')) handle(btn.dataset.act); });
+  for (const ev of ['pointerup', 'pointercancel', 'pointerleave']) btn.addEventListener(ev, stop);
+});
+
+// Swipe on the board to move.
+let swipeStart = null;
+canvas.addEventListener('pointerdown', (e) => { swipeStart = { x: e.clientX, y: e.clientY }; });
+canvas.addEventListener('pointerup', (e) => {
+  if (!swipeStart) return;
+  const dx = e.clientX - swipeStart.x;
+  const dy = e.clientY - swipeStart.y;
+  swipeStart = null;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < 24) return;
+  handle(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
+});
+canvas.addEventListener('pointercancel', () => { swipeStart = null; });
+
+window.addEventListener('resize', resize);
+if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js');
+const resumeIndex = LEVELS.findIndex((l) => l.name === sessionStorage.getItem(CURRENT_KEY));
+if (resumeIndex >= 0) startLevel(resumeIndex);
+else setScreen('menu');
+requestAnimationFrame(render);
+</script>
+</body>
+</html>
