@@ -496,19 +496,25 @@ function handle(action) {
   else if (action === 'menu') setScreen('menu');
 }
 
+// A letter shortcut fires for the typed letter (either case) or for the physical key of that name,
+// so it still works on non-Latin layouts (e.g. Russian, where KeyZ types "я").
+const isLetter = (e, l) => letterOf(e) === l || e.code === 'Key' + l.toUpperCase();
+
 function keyAction(e) {
-  const letter = letterOf(e);
+  // Undo is checked before movement: on AZERTY the key labelled Z sits at KeyW ("up").
+  if (isLetter(e, 'z') || isLetter(e, 'u') || e.code === 'Backspace') return 'undo';
   if (KEY_DIRS[e.code]) return KEY_DIRS[e.code];
   if (e.code === 'Space' || e.code === 'Period') return 'wait';
   if (e.code === 'Enter') return 'next';
-  if (letter === 'z' || letter === 'u' || e.code === 'Backspace') return 'undo';
-  if (letter === 'r') return 'restart';
+  if (isLetter(e, 'r')) return 'restart';
   if (e.code === 'Escape') return 'menu';
   return null;
 }
 
 window.addEventListener('keydown', (e) => {
-  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  // Ctrl/Cmd+Z also undoes; every other modifier combo (Ctrl+R reload, etc.) stays with the browser.
+  const modUndo = (e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && isLetter(e, 'z');
+  if ((e.metaKey || e.ctrlKey || e.altKey) && !modUndo) return;
   const action = keyAction(e);
   // In the level select, only Esc is ours; Enter/Space must still activate the focused level button.
   if (!action || (screen === 'menu' && action !== 'menu')) return;
