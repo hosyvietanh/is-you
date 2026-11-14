@@ -23,13 +23,23 @@
     height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
     padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
   }
-  header { display: flex; gap: 16px; align-items: baseline; }
+  header { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 16px; align-items: baseline; padding: 0 16px; }
   h1 { margin: 0; font-size: 18px; letter-spacing: .2em; }
   #levelName { color: #9aa0ab; }
   canvas { background: #14171f; border-radius: 6px; box-shadow: 0 12px 40px #0009; touch-action: none; }
   #status { min-height: 1.4em; color: #f2d14a; }
   #rules { display: flex; flex-wrap: wrap; gap: 4px 16px; justify-content: center; max-width: 900px; font-size: 13px; color: #9aa0ab; min-height: 1.2em; }
   footer { font-size: 12px; color: #6b717c; }
+  header .btn { font-size: 12px; padding: 4px 10px; border-radius: 8px; color: #9aa0ab; }
+  header .btn[aria-pressed="true"] { color: #f2d14a; border-color: #f2d14a66; }
+  /* Floating, so showing a hint never resizes the board. Bottom on desktop; top on touch (controls are below). */
+  #hint {
+    position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(env(safe-area-inset-bottom) + 16px);
+    width: max-content; max-width: min(560px, calc(100% - 32px)); padding: 10px 14px;
+    background: #1b1f29f2; border: 1px solid #f2d14a55; border-radius: 10px; box-shadow: 0 10px 30px #000a;
+    color: #e8e6e1; font-size: 13px; line-height: 1.45; cursor: pointer;
+  }
+  #hint b { color: #f2d14a; font-weight: normal; letter-spacing: .1em; margin-right: 6px; }
   kbd { border: 1px solid #3a3f4b; border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; color: #c8c6c1; }
   .overlay {
     position: fixed; inset: 0; background: #0b0d12ee;
@@ -69,6 +79,7 @@
     #touch { display: flex; }
     footer, .kbd-hint { display: none; }
     #app { gap: 8px; }
+    #hint { bottom: auto; top: calc(env(safe-area-inset-top) + 8px); }
   }
   @media (max-width: 600px) {
     .overlay h2 { font-size: 22px; }
@@ -79,7 +90,7 @@
 </head>
 <body>
 <div id="app">
-  <header><h1>IS YOU</h1><span id="levelName"></span></header>
+  <header><h1>IS YOU</h1><span id="levelName"></span><button class="btn" id="hintBtn" data-act="hint" aria-pressed="false">Hint</button></header>
   <canvas id="board"></canvas>
   <div id="status"></div>
   <div id="rules"></div>
@@ -99,9 +110,10 @@
   </div>
   <footer>
     <kbd>←↑↓→</kbd>/<kbd>WASD</kbd> move &nbsp; <kbd>Space</kbd> wait &nbsp;
-    <kbd>Z</kbd> undo &nbsp; <kbd>R</kbd> restart &nbsp; <kbd>Esc</kbd> levels
+    <kbd>Z</kbd> undo &nbsp; <kbd>R</kbd> restart &nbsp; <kbd>H</kbd> hint &nbsp; <kbd>Esc</kbd> levels
   </footer>
 </div>
+<div id="hint" class="hidden" role="status" data-act="hint"></div>
 
 <div id="menu" class="overlay">
   <h2>IS YOU</h2>
@@ -371,14 +383,25 @@ function startLevel(i) {
   initialSnap = snapshot(state);
   history = [];
   renderPos.clear();
+  showHint(false);
   $('levelName').textContent = `${i + 1}. ${LEVELS[i].name}`;
   setScreen('play');
   afterAction();
   resize();
 }
 
+function showHint(on) {
+  if (levelIndex < 0) return;
+  const hint = LEVELS[levelIndex].hint;
+  $('hint').innerHTML = '<b>HINT</b>';
+  $('hint').append(hint || 'No hint for this level.');
+  $('hint').classList.toggle('hidden', !on);
+  $('hintBtn').setAttribute('aria-pressed', on);
+}
+
 function setScreen(s) {
   screen = s;
+  if (s !== 'play') showHint(false);
   $('menu').classList.toggle('hidden', s !== 'menu');
   $('winScreen').classList.toggle('hidden', s !== 'win');
   if (s === 'menu') {
@@ -493,6 +516,7 @@ function handle(action) {
   else if (action === 'wait') { if (!state.won) act(null); }
   else if (action === 'undo') undo();
   else if (action === 'restart') restart();
+  else if (action === 'hint') showHint($('hint').classList.contains('hidden'));
   else if (action === 'menu') setScreen('menu');
 }
 
@@ -507,6 +531,7 @@ function keyAction(e) {
   if (e.code === 'Space' || e.code === 'Period') return 'wait';
   if (e.code === 'Enter') return 'next';
   if (isLetter(e, 'r')) return 'restart';
+  if (isLetter(e, 'h')) return 'hint';
   if (e.code === 'Escape') return 'menu';
   return null;
 }

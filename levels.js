@@ -10,6 +10,7 @@
 //
 // Optional `facing` sets the starting direction per object kind (matters for MOVE).
 // Optional `section` starts a new heading in the level select before that level.
+// `hint` is shown on demand (Hint button / H key): a nudge toward the key idea, not a walkthrough.
 (function (global) {
   'use strict';
 
@@ -17,6 +18,7 @@
     {
       section: 'Part 1 · The Basics and Beyond',
       name: 'Baba Is You',
+      hint: 'ROCK IS PUSH, so the rocks just slide ahead of you. Walk to the flag.',
       map: [
         '...............',
         '.B=Y......F=V..',
@@ -33,6 +35,7 @@
     },
     {
       name: 'Where Do I Go?',
+      hint: 'The flag is walled in, but WALL IS STOP is only a sentence. Push one of its words out of line.',
       map: [
         '..............',
         '.B=Y....W=X...',
@@ -48,6 +51,7 @@
     },
     {
       name: 'Out of Reach',
+      hint: "You can't get to the flag, so change what wins. Swap another noun into FLAG IS WIN.",
       map: [
         '...............',
         '.B=Y...........',
@@ -62,6 +66,7 @@
     },
     {
       name: 'Sinking Feeling',
+      hint: 'Anything that enters water sinks, and takes the water with it. Send something in ahead of you.',
       map: [
         '......~......',
         '......~.A=N..',
@@ -75,6 +80,7 @@
     },
     {
       name: 'Hot Feet',
+      hint: "LAVA IS HOT is out of reach, but your own rule isn't. Stop being MELT.",
       map: [
         '..............',
         '.B=Y&M........',
@@ -88,6 +94,7 @@
     },
     {
       name: 'Locked Out',
+      hint: 'KEY IS OPEN and DOOR IS SHUT. Push the key into the door.',
       map: [
         'B=Y..W=X..K=O&P',
         'F=V..D=X&C.....',
@@ -101,6 +108,7 @@
     },
     {
       name: 'Me, the Winner',
+      hint: 'There is no flag in here. Build a second sentence off the BABA you already have.',
       map: [
         'wwwwwwwww....',
         'w.......w....',
@@ -114,6 +122,7 @@
     },
     {
       name: 'Rock Jam',
+      hint: "The rocks are wedged against the edge. What if they weren't PUSH at all?",
       map: [
         'W=X....B=Y',
         '..........',
@@ -125,6 +134,7 @@
     },
     {
       name: 'Sliding Sentence',
+      hint: 'The IS in BABA IS YOU also holds up WALL IS STOP. Slide the whole sentence along.',
       map: [
         'wwWwwFwwww',
         'bB=Y......',
@@ -135,6 +145,7 @@
     },
     {
       name: 'Shared Words',
+      hint: 'The IS in FLAG IS WIN can be read downward too. The spare WALL and FLAG words fit above and below it.',
       map: [
         '...............',
         '.B=Y......wwwww',
@@ -150,6 +161,7 @@
     },
     {
       name: 'Trapped',
+      hint: "You can't get out, but something else could be YOU. Look at the word right above you.",
       map: [
         'wwwww..........',
         'w...w..........',
@@ -164,6 +176,7 @@
     },
     {
       name: 'Patrol',
+      hint: 'The skulls only move up and down. Wait for a gap in each column, then slip through.',
       facing: { skull: 'down' },
       map: [
         'wwwwwwwwwwwwwwwww',
@@ -181,6 +194,7 @@
     },
     {
       name: 'Double Meaning',
+      hint: 'Sliding IS between FLAG and WIN works, but check what it spells downward from BABA first.',
       map: [
         'wwB=Y....W',
         '.F.V.....=',
@@ -192,6 +206,7 @@
     },
     {
       name: 'Append Only',
+      hint: "You can't take words out of WALL AND ROCK IS STOP, but you can add more to the end.",
       map: [
         'W&R=X.....',
         '..........',
@@ -204,6 +219,7 @@
     },
     {
       name: 'Single File',
+      hint: "FLAG IS WIN won't budge, but a sentence can have more than one subject: ___ AND FLAG IS WIN.",
       map: [
         'W......F=V',
         '=.........',
@@ -216,6 +232,7 @@
     },
     {
       name: 'Change of Skin',
+      hint: "ROCK IS YOU is already a rule, there just aren't any rocks. And rocks don't melt.",
       map: [
         '......F=VR=Y',
         '.B=Y..ll....',
@@ -228,6 +245,7 @@
     },
     {
       name: 'Quarry',
+      hint: 'The water is four tiles wide and there are four grass tiles. Turn the grass into something you can push.',
       map: [
         'R=P.....~~~~A=N',
         '........~~~~...',
@@ -241,6 +259,7 @@
     },
     {
       name: 'Bridge of Dread',
+      hint: 'Words are always pushable, and they sink like anything else. Sacrifice one you can do without.',
       map: [
         'B=Y...s~F=V',
         '......s~...',
@@ -254,6 +273,7 @@
     },
     {
       name: 'Self-Defeating',
+      hint: 'Something that is both YOU and DEFEAT destroys itself. Make the skulls YOU.',
       map: [
         '.....s.F=V',
         '.....s....',
@@ -266,6 +286,7 @@
     },
     {
       name: 'Every Wall a Door',
+      hint: 'KEY IS OPEN already. Make the walls SHUT by adding to WALL IS STOP.',
       map: [
         'W=X......B=Y',
         '............',
@@ -279,6 +300,7 @@
     },
     {
       name: 'Double Time',
+      hint: 'DEFEAT is only checked at the end of a turn. Something that moves twice per turn can hop right over a skull.',
       map: [
         '.......s..sS=E',
         '.......s..s...',
@@ -291,6 +313,7 @@
     },
     {
       name: 'Expendable',
+      hint: 'BABA IS OPEN would open the door, but whoever opens it is destroyed too. Good thing there are two of you.',
       map: [
         'wwwwwwwwwwwwwwww',
         'w..B=Y....w....w',
@@ -305,6 +328,7 @@
     },
     {
       name: 'Burnout',
+      hint: 'Lava is HOT. What happens to something that is HOT and MELT at the same time?',
       map: [
         '...M..l........',
         '......l....B=M.',
@@ -319,6 +343,7 @@
     },
     {
       name: 'Changing Hands',
+      hint: "You can't get into the box, but the rock is already in there. Set up FLAG IS WIN, then hand YOU to the rock.",
       map: [
         '.............',
         '..B=Y........',
@@ -333,6 +358,7 @@
     },
     {
       name: 'Where Edges Meet',
+      hint: 'Words against an edge can still slide along it. FLAG can ride up the left edge to meet WIN in the top row.',
       map: [
         '...V...',
         '.f.....',
@@ -343,6 +369,7 @@
     },
     {
       name: 'Become the Goal',
+      hint: "The flag is STOP, so you can't touch it. But WIN only needs a YOU on the same tile. What if the flag were YOU?",
       map: [
         'F=V&XB=Y',
         '........',
@@ -353,6 +380,7 @@
     },
     {
       name: 'Spare Me',
+      hint: 'FLAG IS WIN is waiting, but there are no flags. Something has to become one without leaving you with nothing to control.',
       map: [
         'B&W=....F=V',
         '..w........',
@@ -366,6 +394,7 @@
     },
     {
       name: 'Word Drill',
+      hint: 'TEXT IS SINK makes every word a drill. Two skull columns need two words in the same row, and a sentence pushed as one piece keeps working while it drills.',
       map: [
         'B=Y..ss.F=V',
         '.....ss....',
@@ -379,6 +408,7 @@
     },
     {
       name: 'Underfoot',
+      hint: "You can't step onto text, it just gets pushed. So make text appear right under your feet.",
       map: [
         'B=Y....T=V',
         '..........',
@@ -391,6 +421,7 @@
     },
     {
       name: 'Hot Seat',
+      hint: 'There is one water tile right next to LAVA IS HOT, and water is SINK.',
       map: [
         '..L=H~...',
         '.........',
@@ -403,6 +434,7 @@
     },
     {
       name: 'Bones to Stones',
+      hint: 'The skulls in the water are half a bridge already. Turn them into something you can push.',
       map: [
         'S=E.~~~~~F=V',
         '..=.~~~~~R=P',
@@ -414,6 +446,7 @@
     },
     {
       name: 'Firebrand',
+      hint: 'The rock is HOT. Make the skulls MELT, then use the rock as a battering ram.',
       map: [
         'S=E...ssF=V',
         '......ss...',
@@ -426,6 +459,7 @@
     },
     {
       name: 'Bucket Brigade',
+      hint: 'Water sinks whatever it shares a tile with, lava included. Find a way to carry it.',
       map: [
         'B=Y&M..llF=V',
         '.......ll...',
@@ -439,6 +473,7 @@
     },
     {
       name: 'Let Itself Out',
+      hint: "You can't get into that corridor, but the flag can come out. Things that MOVE push whatever is in their way.",
       map: [
         '........D=X&C',
         '.............',
@@ -452,6 +487,7 @@
     },
     {
       name: 'Spend Wisely',
+      hint: 'Three doors, and each key only works once. Open the door that gets you more keys first.',
       map: [
         'B=Y.F=V.W=X',
         'wwwwwwwwwww',
@@ -468,6 +504,7 @@
     },
     {
       name: 'The Key Walks',
+      hint: 'KEY IS OPEN ends in the same row as YOU. One AND would let the key be YOU too.',
       map: [
         'F=V..........B',
         '.............=',
@@ -482,6 +519,7 @@
     },
     {
       name: 'Courier',
+      hint: 'The rock keeps crossing the skulls on its own. Give it something to carry.',
       map: [
         'B=Y....s.S=E',
         '.......s...F',
@@ -494,6 +532,7 @@
     },
     {
       name: 'Stand Your Ground',
+      hint: "BABA IS YOU AND ___ has a blank to fill. Skulls can't step onto something that is STOP.",
       facing: { skull: 'down' },
       map: [
         'B=Y&..S=E&Zw.',
@@ -507,6 +546,7 @@
     },
     {
       name: 'Role Reversal',
+      hint: "You can't cross the wall, but the flag is on the same side as WALL IS STOP. Swap roles: make the flag YOU and yourself WIN.",
       map: [
         '.=Vw.....',
         'B=Yw..f..',
@@ -519,6 +559,7 @@
     },
     {
       name: 'Taking Turns',
+      hint: 'Fill the gap in the top row so ROCK and BABA turn into each other. Then the rock in the room gets a turn at being you.',
       map: [
         'B=Y.R=.=R=V.',
         '............',
@@ -531,6 +572,7 @@
     },
     {
       name: 'Lockstep',
+      hint: 'Both Babas move as one. Walls can hold one still while the other keeps going.',
       map: [
         'wwwwwwwwwwwww',
         'w.....w.....w',
@@ -544,6 +586,7 @@
     },
     {
       name: 'Action at a Distance',
+      hint: 'There is a rock inside the box, right next to WALL IS STOP. Get it moving.',
       map: [
         '.B=Y..Z.wwwww',
         '........w.W.w',
@@ -558,6 +601,7 @@
     },
     {
       name: 'Letterpress',
+      hint: 'The flag is boxed in, but the flag could become a word. A FLAG word in that corner would finish ROCK IS ___.',
       map: [
         'B=Y...F=V',
         '.........',
@@ -570,6 +614,7 @@
     },
     {
       name: 'Matched Pair',
+      hint: 'A noun can turn into two things at once. Walls that became both KEY and DOOR would not last long.',
       map: [
         'B=Y..wK&D=X...',
         '.....w=.=.....',
@@ -583,6 +628,7 @@
     },
     {
       name: 'Scapegoat',
+      hint: 'The MELT in BABA IS MELT would be more useful on the end of ROCK IS PUSH AND.',
       map: [
         'B=Y...rr..l..f',
         '......~~~~~~~~',
@@ -595,6 +641,7 @@
     },
     {
       name: 'Key Word',
+      hint: 'There are no keys here. But KEY IS OPEN could describe something else you can push.',
       map: [
         'B=Y........F=V',
         '..............',
@@ -608,6 +655,7 @@
     },
     {
       name: 'Echo',
+      hint: 'Every move you make in the maze, the top Baba makes too. Make sure it is under WIN, not BABA IS YOU, when you press up.',
       map: [
         'W=X....F=.',
         'wwwB=YwwwV',
@@ -624,6 +672,7 @@
     },
     {
       name: 'Relay',
+      hint: 'BABA and ROCK can pass YOU back and forth through that one column. Each can clear something the other cannot reach.',
       map: [
         'r.........df',
         '.G=Xw.w....d',
@@ -638,6 +687,7 @@
     },
     {
       name: 'Spare Parts',
+      hint: "One rock won't fill four tiles of water. Once you're done with a word, it can go in the water too.",
       map: [
         '....~~~~B=Y',
         '..R.~~~~..F',
@@ -648,6 +698,7 @@
     },
     {
       name: 'Special Delivery',
+      hint: "TEXT IS WIN, but you can't step onto a word. Let the moving rock push one onto you.",
       map: [
         'B=Y....wT=.w',
         'www.V......w',
@@ -659,6 +710,7 @@
     },
     {
       name: 'Out of the Corner',
+      hint: 'WIN is stuck in the corner where nothing can push it out. But it could walk out on its own.',
       map: [
         'B=Yw....wV',
         'www.....w.',
@@ -671,6 +723,7 @@
     },
     {
       name: 'Redaction',
+      hint: 'Words can be SHUT too, and an OPEN key destroys any SHUT thing it touches. Pick a sentence to erase.',
       map: [
         'W=X....wf',
         'K.....kww',
@@ -682,6 +735,7 @@
     },
     {
       name: 'Bookworm',
+      hint: 'The key in the tunnel already carries words back and forth. Let it deliver WIN first, then make the words it bumps into SHUT.',
       facing: { key: 'left' },
       map: [
         'K=O&Z....wfw',
@@ -694,6 +748,7 @@
     },
     {
       name: 'Keystone',
+      hint: 'Make text SHUT, then find the one word that holds up two rules at once.',
       map: [
         'F=V.......',
         'K.....ww.T',
@@ -706,6 +761,7 @@
     },
     {
       name: 'Nothing Wasted',
+      hint: "You'll need every spare word: one sentence to get through the wall, then the leftovers to fill the water.",
       map: [
         'W=X....w~~~~.A',
         'K..T...w~~~~.=',
@@ -718,6 +774,7 @@
     {
       section: 'Part 2 · Challenge Pack',
       name: 'Ramrod',
+      hint: "You can't cross the skulls, but a long enough line of words can reach over them. Push from the back.",
       map: [
         'B=Ywwwwww',
         'w....s...',
@@ -731,6 +788,7 @@
     },
     {
       name: 'Stand-In',
+      hint: 'The top room needs an IS. The one under BABA IS YOU can push in from below and take over its job.',
       map: [
         'W=Xwwwwwwww',
         'w.........w',
@@ -744,6 +802,7 @@
     },
     {
       name: 'Armored Car',
+      hint: 'Sliding a word along the corridor spells BABA IS ROCK on its way past. Armor yourself first: BABA IS BABA cannot be overwritten.',
       map: [
         'W=Xwwwwwwwwwww',
         'wwwwwwwwwwwwww',
@@ -758,6 +817,7 @@
     },
     {
       name: 'Wrong Way Round',
+      hint: 'WIN IS FLAG reads backwards. Rebuild it reading downward instead.',
       map: [
         'f...',
         'V=F.',
@@ -767,6 +827,7 @@
     },
     {
       name: 'Afterimage',
+      hint: 'Changes stick. Once something has transformed, you can take its sentence apart and reuse the words.',
       map: [
         'B=Y..',
         '..RV.',
@@ -777,6 +838,7 @@
     },
     {
       name: 'Photo Finish',
+      hint: 'FLAG IS SKULL turns any new flag into a skull on the next turn. Be standing on it the moment it appears.',
       map: [
         'B=Y....F',
         '..R....=',
@@ -788,6 +850,7 @@
     },
     {
       name: 'Assembly Line',
+      hint: 'GRASS IS ROCK AND KEY already ran once. If keys turned back into grass, you would get a fresh rock every other turn.',
       map: [
         'B=Y.R=P.www.WF',
         '........~~~.==',
@@ -801,6 +864,7 @@
     },
     {
       name: 'Stop the Rot',
+      hint: "Turning skulls into rocks isn't enough while ROCK IS LAVA. A noun that IS itself can't be changed.",
       map: [
         'R=L.....L',
         'S=E.....=',
@@ -813,6 +877,7 @@
     },
     {
       name: 'Heat Sink',
+      hint: 'Rocks plug anything that is SINK. Move SINK from the water to the lava, then bring the rocks.',
       map: [
         'R=PB=Y&M.A.L=H',
         '.........=....',
@@ -825,6 +890,7 @@
     },
     {
       name: 'Bridge Toll',
+      hint: 'Two tiles of water and one key. Could the door itself be pushed?',
       map: [
         'D=X&CW=XB=Y.',
         '=...........',
@@ -837,6 +903,7 @@
     },
     {
       name: 'Logjam',
+      hint: 'Make the rocks OPEN to get through the doors. There are three rocks for two doors, so get the spare one out of the corridor first.',
       map: [
         'R=P.....D=X&C',
         '.............',
@@ -849,6 +916,7 @@
     },
     {
       name: 'Turnkey',
+      hint: "The key is STOP, so you can't push it. Bring the door to the key instead.",
       map: [
         'K=O&X....F=V',
         '...........w',
@@ -861,6 +929,7 @@
     },
     {
       name: 'Guard Duty',
+      hint: 'One key, two doors. The skull already patrols right up to the far door. What if it were OPEN?',
       map: [
         'S=E&ZW=XF=V',
         '.....wwwwww',
@@ -873,6 +942,7 @@
     },
     {
       name: 'Off Switch',
+      hint: 'The rock stuck among the skulls can push words where you cannot reach. Switch it on, then off again.',
       map: [
         'ssS=Esss',
         'sssRFsss',
@@ -885,6 +955,7 @@
     },
     {
       name: 'Autopilot',
+      hint: 'DEFEAT only destroys things that are YOU. Let Baba walk past the skulls on its own, then take control again.',
       map: [
         'fw.....wS=E',
         'sw.....wF=V',
@@ -895,6 +966,7 @@
     },
     {
       name: 'Freeze Frame',
+      hint: 'The flag is already moving. Stop it somewhere you can reach, then make it WIN.',
       map: [
         'fsss.sss',
         'ssss.sss',
@@ -906,6 +978,7 @@
     },
     {
       name: 'Drive-By',
+      hint: 'The rock pushes along the skull row. Feed WIN in just ahead of it so it gets dropped under FLAG IS.',
       map: [
         'S=EW=XFss',
         'R=Zsss=ss',
@@ -917,6 +990,7 @@
     },
     {
       name: 'Idle Hands',
+      hint: 'The rock is YOU and MOVE: each press moves it twice, and waiting still moves it once. Mix in waits to land on the right tiles.',
       facing: { rock: 'right' },
       map: [
         'ww..wwwwwwwwwwwwfw',
@@ -932,6 +1006,7 @@
     },
     {
       name: 'Snap Shut',
+      hint: 'FLAG is one tile short of IS WIN and neither end can be pushed. What if the words moved themselves for a turn?',
       map: [
         'KDGF.=V',
         'B......',
@@ -943,6 +1018,7 @@
     },
     {
       name: 'Off the Wall',
+      hint: "The skulls surround the flag, but they don't have to stay put. Make them MOVE.",
       map: [
         'S.......',
         '=..T....',
@@ -955,6 +1031,7 @@
     },
     {
       name: 'Carousel',
+      hint: 'SKULL IS ROCK would turn the three rules into a loop that changes every turn. Step on at the right moment, then wait.',
       map: [
         'R=F=S....',
         '=&=&=....',
@@ -967,6 +1044,7 @@
     },
     {
       name: 'Last In, First Out',
+      hint: 'The sentence is backwards and the room is tight. Like unstacking plates, work out which word has to move first.',
       map: [
         'W=XwwwB=Y',
         'wwwwwwwww',
@@ -980,6 +1058,7 @@
     },
     {
       name: 'Quarter Turn',
+      hint: 'There is only one IS. Turn BABA IS YOU on its side so it can share it with FLAG and WIN.',
       map: [
         'W=Xwwwww',
         'wwww.www',
@@ -993,6 +1072,7 @@
     },
     {
       name: 'Through the Floor',
+      hint: 'Only one IS again. FLAG IS WIN can cross BABA IS YOU, reading top to bottom.',
       map: [
         'W=Xwwwww',
         'wwwwwwww',
@@ -1007,6 +1087,7 @@
     },
     {
       name: 'Flock',
+      hint: 'Every word is YOU and they all move together. Pin some against the edges so the rest can shift, and spell TEXT IS WIN.',
       map: [
         'T=Y..',
         '....V',
@@ -1015,6 +1096,7 @@
     },
     {
       name: 'Split Decision',
+      hint: 'A rock that turns into two things at once leaves both of them on the same tile.',
       map: [
         'F=VRr',
         '.bR.B',
@@ -1024,6 +1106,7 @@
     },
     {
       name: 'Coattails',
+      hint: 'The Baba in the corner is sitting where a word could make BABA AND ROCK IS YOU. Then BABA IS YOU is free to change.',
       map: [
         'b&R=Y',
         '.B=Y.',
@@ -1033,6 +1116,7 @@
     },
     {
       name: 'Self-Contained',
+      hint: 'Baba can become two things at once. Make sure one of them is YOU and the other is a flag, and finish it all with a single push.',
       map: [
         'B=Y.....',
         '=....=..',
@@ -1043,6 +1127,7 @@
     },
     {
       name: 'Ripening',
+      hint: 'Things change one step per turn: grass to rock, rock to flag, flag to skull. Stand on the grass and let it ripen.',
       map: [
         'GB=Y.R',
         '.....=',
@@ -1055,6 +1140,7 @@
     },
     {
       name: 'Doused',
+      hint: 'Water is SINK, and it takes lava down with it. Park the rocks on the lava first, then turn them into water.',
       map: [
         '.....ll~.BBA',
         'R=P..ll~.===',
@@ -1066,6 +1152,7 @@
     },
     {
       name: 'Ricochet',
+      hint: 'WATER IS MOVE sends the water the wrong way. Give it something at the far end to bounce off.',
       map: [
         'A=NXXXXXFB',
         '........==',
@@ -1077,6 +1164,7 @@
     },
     {
       name: 'Keyless',
+      hint: 'No keys, but walls could be OPEN. Then a door that tried to MOVE would walk straight into one.',
       map: [
         'D=X&C..W=X..',
         'B..........F',
@@ -1089,6 +1177,7 @@
     },
     {
       name: 'Skeleton Crew',
+      hint: 'Two doors, no keys, but plenty of rocks. Turn the rocks into Babas, then make every Baba OPEN and spend the extras on the doors.',
       map: [
         'W=X....B=Y.',
         '...........',
@@ -1103,6 +1192,7 @@
     },
     {
       name: 'Packing Order',
+      hint: 'The rock shuttles along the skull row, pushing whatever is in its way. Feed it words through the gap, in the right order.',
       map: [
         'sFS=Esss',
         's=R=Zsss',
@@ -1116,6 +1206,7 @@
     },
     {
       name: 'Piggyback',
+      hint: 'FLAG IS STOP keeps you off any flag. But what if a flag appeared underneath you?',
       map: [
         'F=V&XwB=Yw',
         'wwwwwwwwww',
@@ -1130,6 +1221,7 @@
     },
     {
       name: 'Night Shift',
+      hint: 'Baba and the rock take turns being YOU. Switch one off, move the other, then swap back.',
       map: [
         'wwwwwwwwwwwww',
         'wwwb.wwrww.fw',
@@ -1142,6 +1234,7 @@
     },
     {
       name: 'One Pair Short',
+      hint: 'Both Babas move with every press. Bump one into a wall to let the other get ahead.',
       map: [
         'wwwwwwwwwww',
         'ww..YwW=Xww',
@@ -1157,6 +1250,7 @@
     },
     {
       name: 'Shoulder to Shoulder',
+      hint: 'Three Babas move together. Walls hold some back while others go on. Only one needs to reach the flag.',
       map: [
         'wwwwwwwwwww',
         'ww...wW=Xww',
@@ -1173,6 +1267,7 @@
     },
     {
       name: 'Blink',
+      hint: 'Skulls and flags can keep turning into each other. Set up FLAG IS WIN and catch one while it is a flag.',
       map: [
         'F...S=E',
         '=.....B',
@@ -1186,6 +1281,7 @@
     },
     {
       name: 'Ink on Water',
+      hint: 'A rule only has to exist for one turn to change things, even if one of its words is sinking as it lands.',
       map: [
         'S=EF=S&V',
         '=..bs.s.',
@@ -1198,6 +1294,7 @@
     },
     {
       name: 'Caught on Its Own Wall',
+      hint: 'Set the words moving. When one of them gets caught on a wall and the others do not, the sentence falls apart.',
       map: [
         'W....w...F',
         '=..w.w...=',
@@ -1211,6 +1308,7 @@
     },
     {
       name: 'Turned to Stone',
+      hint: 'Rules change before anything is destroyed. Step onto a skull on the same move that turns it to stone.',
       map: [
         'b.......',
         '....R...',
@@ -1225,6 +1323,7 @@
     },
     {
       name: 'Firewalk',
+      hint: 'BABA IS MELT can be pushed down into the lava like anything else. Knock it apart down there.',
       map: [
         'b...wB=Y',
         '.wBwwL=H',
@@ -1238,6 +1337,7 @@
     },
     {
       name: 'Quench',
+      hint: 'LAVA IS sits right next to a water tile. Finish it with a word there: the rule only has to last one turn.',
       map: [
         'L=~w.ll..',
         '...w.ll..',
@@ -1252,6 +1352,7 @@
     },
     {
       name: 'Ouroboros',
+      hint: 'You need four OPEN rocks but only have one key and one door. Build a loop where they keep turning into each other and drop a rock every lap. DOOR IS TEXT gets you a spare word.',
       map: [
         'RB=Y...ssss..S',
         '=......ssss..=',
@@ -1265,6 +1366,7 @@
     },
     {
       name: 'Riptide',
+      hint: 'Water is SINK, and SINK takes whatever it touches down with it. What if the water moved when you did?',
       map: [
         'B=YA=NS=EW=XF',
         '..=...w..ww.=',
@@ -1277,6 +1379,7 @@
     },
     {
       name: 'Second Leg',
+      hint: "DEFEAT only hurts things that are YOU. Let Baba run past the skulls while it isn't YOU, and use the rock to hand control back at the finish.",
       map: [
         '.sssfR=Y',
         'swwwwwww',
@@ -1290,6 +1393,7 @@
     },
     {
       name: 'Dead Ringer',
+      hint: 'The Baba in the top pocket copies every move and will wreck BABA IS YOU. There is lava right next to it.',
       map: [
         'L=HwlBlwwww',
         'F=Vwb=lwwww',
@@ -1303,6 +1407,7 @@
     },
     {
       name: 'Famous Last Words',
+      hint: 'Each water tile can finish a sentence. A word pushed in sinks, but its rule still fires for that one turn.',
       map: [
         'B=Yw..S.s.~=F',
         '=w...w=.s..w=',
@@ -1315,6 +1420,7 @@
     },
     {
       name: 'Pinned',
+      hint: 'The flag never stops moving, and it pushes whatever is in its way. Pack its lane with words until it is wedged in place.',
       map: [
         'b......',
         '.R=.P&.',
